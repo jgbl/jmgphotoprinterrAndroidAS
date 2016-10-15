@@ -1,4 +1,4 @@
-package com.jmg.photoprinter;
+package com.jmg.jmgphotouploader;
 
 
 public class ImgFolder extends Object

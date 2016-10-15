@@ -1,6 +1,5 @@
-package com.jmg.photoprinter;
+package com.jmg.jmgphotouploader;
 
-import java.io.Console;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 

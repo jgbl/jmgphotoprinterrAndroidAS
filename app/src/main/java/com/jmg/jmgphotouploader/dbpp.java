@@ -1,4 +1,4 @@
-﻿package com.jmg.photoprinter;
+﻿package com.jmg.jmgphotouploader;
 import java.io.*;
 
 import android.database.sqlite.*;

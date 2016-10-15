@@ -1,4 +1,4 @@
-package com.jmg.photoprinter;
+package com.jmg.jmgphotouploader;
 
 import android.graphics.*;
 import android.content.*;

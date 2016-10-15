@@ -1,4 +1,4 @@
-package com.jmg.photoprinter;
+package com.jmg.jmgphotouploader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,9 +24,8 @@ import android.widget.*;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
-import com.jmg.photoprinter.ImgFolder.Type;
-import com.jmg.photoprinter.R;
-import com.jmg.photoprinter.Controls.ZoomExpandableListview;
+import com.jmg.jmgphotouploader.ImgFolder.Type;
+import com.jmg.jmgphotouploader.Controls.ZoomExpandableListview;
 //import com.facebook.*;
 //import com.facebook.android.Facebook;
 //import com.sromku.simple.*;

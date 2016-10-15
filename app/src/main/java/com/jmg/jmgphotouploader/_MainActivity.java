@@ -1,7 +1,5 @@
-package com.jmg.photoprinter;
+package com.jmg.jmgphotouploader;
 
-
-import com.jmg.photoprinter.R;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,7 +12,7 @@ import android.view.*;
 import android.widget.*;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.provider.*;
-import com.jmg.photoprinter.Controls.*;
+import com.jmg.jmgphotouploader.Controls.*;
 import com.microsoft.live.LiveAuthClient;
 import com.microsoft.live.LiveAuthException;
 import com.microsoft.live.LiveAuthListener;

@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
-android {
+    android {
     compileSdkVersion 23
-    buildToolsVersion "24.0.0"
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         applicationId "com.jmg.jmgphotouploader"
@@ -16,4 +16,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+}
+dependencies {
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:support-v4:23.1.1'
+    compile project(':src')
+    compile project(':utilities')
 }

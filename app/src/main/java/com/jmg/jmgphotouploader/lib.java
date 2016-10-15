@@ -1,4 +1,4 @@
-﻿package com.jmg.photoprinter;
+﻿package com.jmg.jmgphotouploader;
 
 //import android.support.v7.app.ActionBarActivity;
 import java.io.*;
@@ -23,7 +23,6 @@ import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import java.util.Locale;
-import java.util.concurrent.CountDownLatch;
 
 public class lib
 {
