@@ -2,6 +2,10 @@ package com.jmg.jmgphotouploader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.*;
 
 import android.net.Uri;
@@ -454,10 +458,45 @@ public class PhotoFolderAdapter extends BaseExpandableListAdapter implements Liv
 			return view;
 		}
 	}
-	private void LoadThumbnailOneDrive(final ImgListItem item, final ImageView Image)
+
+    List<imgListViewLiveDownloadListener> list = new ArrayList<imgListViewLiveDownloadListener>();
+    Timer timer = new Timer();
+    boolean TimerStarted;
+    private void LoadThumbnailOneDrive(ImgListItem item, ImageView Image) throws Exception
 	{
-		String file = item.id + "/picture?type=thumbnail";
+        final ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).lv;
+        if (!TimerStarted)
+        {
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    for(imgListViewLiveDownloadListener ldl:list)
+                    {
+                        if (mIsScrolling || lv.getIsScaled() || !ItemExists(ldl.Image, ldl.item))
+                        {
+                            ldl.cancel();
+                        }
+                    }
+                    if (list.isEmpty())
+                    {
+                        TimerStarted = false;
+                        try
+                        {
+                            timer.cadfgdfcel();
+                        }
+                        catch(Exception ex)
+                        {
+
+                        }
+                    }
+                }
+            },500,500);
+            TimerStarted = true;
+        }
+
+        String file = item.id + "/picture?type=thumbnail";
 		if (item.ThumbnailLoaded) return;
+		if (!ItemExists(Image,item)) return;
 		try 
 		{
 			
@@ -476,7 +515,7 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 			{
 				lib.ShowException(context, ex);
 			}
-			ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).lv;
+
         	if (mIsScrolling || lv.getIsScaled() || !ItemExists(Image, item))
 			{
         		/*
@@ -490,14 +529,15 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 			}
 			else
 			{
-				LiveDownloadOperationListener LDL;
-				LDL = new LiveDownloadOperationListener() 
-					{
+				imgListViewLiveDownloadListener LDL;
+				LDL = new imgListViewLiveDownloadListener(Image,item)
+                    {
+
 			        public void onDownloadCompleted(LiveDownloadOperation operation)
 			        {
-			        	InputStream input = null;
+                        InputStream input = null;
 			        	ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).lv;
-			        	if (mIsScrolling || lv.getIsScaled() || !ItemExists(Image, item))
+                        if (mIsScrolling || lv.getIsScaled() || !ItemExists(Image, item))
 						{
 			        		/*
 			        		lib.ShowToast(context, "Download interrupted " + item.FileName 
@@ -565,7 +605,12 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 			            }
 			            finally
 			            {
-			            	//mProgress.dismiss();
+			            	list.remove(this);
+                            if (list.isEmpty())
+                            {
+                                TimerStarted = false;
+                                timer.cancel();
+                            }
 			            }
 			        }
 			        			        
@@ -573,7 +618,7 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 			        {
 			            //resultTextView.setText(exception.getMessage());
 			        	//lib.ShowToast(context, "Failure! Could not load " + item.FileName);
-			        	lib.ShowToast(context, "Could not load " + item.FileName + " Error: " + exception.getClass().getName() + " " + exception.getMessage() + (lib.getCauses(exception)));
+                        lib.ShowToast(context, "Could not load " + item.FileName + " Error: " + exception.getClass().getName() + " " + exception.getMessage() + (lib.getCauses(exception)));
 			        	//mProgress.dismiss();
 			        	/*
 			        	if (exception.getClass() == LiveOperationException.class && exception.getMessage().contains("request_token_missing"))
@@ -584,6 +629,12 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 							context.finish();
 			        	}
 			        	*/
+                        list.remove(this);
+                        if (list.isEmpty())
+                        {
+                            TimerStarted = false;
+                            timer.cancel();
+                        }
 			        }
 			        public void onDownloadProgress(int totalBytes, int bytesRemaining, LiveDownloadOperation operation)
 			        {
@@ -600,11 +651,13 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 			        				+ " ItemExists " + ItemExists(Image,item));
 			        		operation.cancel();
 			        	}
-							
+
                         //mProgress.setProgress(percentCompleted);
 			        }
 			    };
-			    lib.getClient(context).downloadAsync(file, LDL ,null);
+                LDL.operation = lib.getClient(context).downloadAsync(file, LDL,new Object[]{Image,item});
+                list.add(LDL);
+
 			}
 		}
 		catch (Exception ex)

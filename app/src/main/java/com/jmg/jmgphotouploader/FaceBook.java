@@ -1,4 +1,4 @@
-﻿/*
+/*
 
 package com.example.facebook;
 import android.net.Uri;
