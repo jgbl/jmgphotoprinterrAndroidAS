@@ -1,5 +1,7 @@
 package com.jmg.jmgphotouploader;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -570,9 +572,9 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 							timer.purge();
 							timer = null;
 						}*/
+						//File f = (File)operation.getUserState();
                         InputStream input = null;
-			        	ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).lv;
-                        if (mIsScrolling || lv.getIsScaled() || !ItemExists(Image, item))
+			        	if (mIsScrolling || lv.getIsScaled() || !ItemExists(Image, item))
 						{
 			        		/*
 			        		lib.ShowToast(context, "Download interrupted " + item.FileName 
@@ -586,7 +588,7 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 						}
 			        	try {
 			                //resultTextView.setText("Picture downloaded.");
-			                input =  operation.getStream();
+			                input =  operation.getStream(); //new FileInputStream(f);
 			                Bitmap bMap = null;
 			                try
 			                {
@@ -640,7 +642,7 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 			            }
 			            finally
 			            {
-
+							//f.delete();
 			            }
 			        }
 			        			        
@@ -649,7 +651,9 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 			            //resultTextView.setText(exception.getMessage());
 			        	//lib.ShowToast(context, "Failure! Could not load " + item.FileName);
                         lib.ShowToast(context, "Could not load " + item.FileName + " Error: " + exception.getClass().getName() + " " + exception.getMessage() + (lib.getCauses(exception)));
-			        	//mProgress.dismiss();
+						//File f = (File)operation.getUserState();
+						//f.delete();
+						//mProgress.dismiss();
 			        	/*
 			        	if (exception.getClass() == LiveOperationException.class && exception.getMessage().contains("request_token_missing"))
 			        	{
@@ -684,12 +688,15 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 			        				+ " IsScaled " + lv.getIsScaled() 
 			        				+ " ItemExists " + ItemExists(Image,item));
 			        		operation.cancel();
+							//File f = (File)operation.getUserState();
+							//f.delete();
 			        	}
 
                         //mProgress.setProgress(percentCompleted);
 			        }
 			    };
-                LDL.operation = lib.getClient(context).downloadAsync(file, LDL,new Object[]{Image,item});
+				//File tmpFile = File.createTempFile("Live",".tmp");
+                LDL.operation = lib.getClient(context).downloadAsync(file, LDL);
                 //list.add(LDL);
 
 			}
