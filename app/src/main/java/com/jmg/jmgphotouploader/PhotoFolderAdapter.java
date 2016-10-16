@@ -380,6 +380,7 @@ public class PhotoFolderAdapter extends BaseExpandableListAdapter implements Liv
 									cb.setGravity(android.view.Gravity.CENTER_VERTICAL);
 									float Weight = 0.49f / Cursor.getCount();
 									LinearLayout.LayoutParams L = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.FILL_PARENT,Weight);
+									//noinspection WrongConstant
 									L.gravity = cb.getGravity();
 									/*
 									if (cb.getScaleX() != 1.0f){
@@ -456,42 +457,66 @@ public class PhotoFolderAdapter extends BaseExpandableListAdapter implements Liv
 		{
 			lib.ShowException(context, ex);
 			return view;
+		} catch (Exception e) {
+			lib.ShowException(context, e);
+			return view;
 		}
 	}
 
     List<imgListViewLiveDownloadListener> list = new ArrayList<imgListViewLiveDownloadListener>();
-    Timer timer = new Timer();
+    Timer timer;
     boolean TimerStarted;
     private void LoadThumbnailOneDrive(ImgListItem item, ImageView Image) throws Exception
 	{
         final ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).lv;
-        if (!TimerStarted)
+
+		if (!TimerStarted)
         {
-            timer.schedule(new TimerTask() {
+            TimerStarted = true;
+			timer = new Timer();
+			timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    for(imgListViewLiveDownloadListener ldl:list)
-                    {
-                        if (mIsScrolling || lv.getIsScaled() || !ItemExists(ldl.Image, ldl.item))
-                        {
-                            ldl.cancel();
-                        }
-                    }
+                    try {
+						for (int i = 0; i < list.size(); i++)
+						{
+							imgListViewLiveDownloadListener ldl = list.get(i);
+							if (!ItemExists(ldl.Image, ldl.item))
+							{
+								try
+								{
+									ldl.cancel();
+									list.remove((ldl));
+									i--;
+								}
+								catch (Exception ex)
+								{
+									lib.ShowException(context, ex);
+								}
+
+							}
+						}
+					}
+					catch (Exception ex)
+					{
+						lib.ShowException(context,ex);
+					}
                     if (list.isEmpty())
                     {
                         TimerStarted = false;
                         try
                         {
-                            timer.cadfgdfcel();
+                            timer.cancel();
+							timer.purge();
                         }
                         catch(Exception ex)
                         {
-
+							lib.ShowException(context,ex);
                         }
                     }
                 }
             },500,500);
-            TimerStarted = true;
+            //TimerStarted = true;
         }
 
         String file = item.id + "/picture?type=thumbnail";
@@ -535,6 +560,13 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 
 			        public void onDownloadCompleted(LiveDownloadOperation operation)
 			        {
+						list.remove(this);
+						if (list.isEmpty())
+						{
+							TimerStarted = false;
+							timer.cancel();
+							timer.purge();
+						}
                         InputStream input = null;
 			        	ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).lv;
                         if (mIsScrolling || lv.getIsScaled() || !ItemExists(Image, item))
@@ -605,12 +637,7 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 			            }
 			            finally
 			            {
-			            	list.remove(this);
-                            if (list.isEmpty())
-                            {
-                                TimerStarted = false;
-                                timer.cancel();
-                            }
+
 			            }
 			        }
 			        			        
@@ -634,6 +661,7 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
                         {
                             TimerStarted = false;
                             timer.cancel();
+							timer.purge();
                         }
 			        }
 			        public void onDownloadProgress(int totalBytes, int bytesRemaining, LiveDownloadOperation operation)
@@ -987,7 +1015,11 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 								//Bitmap bitmap = ((BitmapDrawable)Image.getDrawable()).getBitmap();
 								if (item.type==ImgFolder.Type.OneDriveAlbum || item.type==ImgFolder.Type.OneDriveFolder)
 								{
-									LoadThumbnailOneDrive(item,Image);
+									try {
+										LoadThumbnailOneDrive(item,Image);
+									} catch (Exception e) {
+										lib.ShowException(context,e);
+									}
 								}
 								else
 								{
