@@ -1,13 +1,16 @@
 package com.jmg.jmgphotouploader;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import java.util.Arrays;
+import java.util.prefs.Preferences;
 
 import com.microsoft.live.LiveAuthException;
 import com.microsoft.live.LiveAuthListener;
@@ -45,6 +48,7 @@ public class LoginLiveActivity extends Activity  implements LiveAuthListener
             _btnClose = (Button)findViewById(R.id.btnClose);
             
             auth = new LiveAuthClient(this, secrets.LoginLive);
+
             mApp.setAuthClient(auth);
                     
             GroupPosition = getIntent().getExtras().getInt("GroupPosition");
@@ -123,9 +127,24 @@ public class LoginLiveActivity extends Activity  implements LiveAuthListener
     }
     private void LoginLive()
     {
-		final Iterable<String> scopes = Arrays.asList("wl.signin", "wl.basic", "wl.skydrive");
+		final Iterable<String> scopes = Arrays.asList("wl.signin", "wl.basic", "wl.skydrive", "wl.offline_access" );
         //LoginLiveActivity.this.auth = new LiveAuthClient(LoginLiveActivity.this.getApplicationContext(), "0000000048135143");
-        LoginLiveActivity.this.auth.login(LoginLiveActivity.this, scopes, LoginLiveActivity.this);
+        SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+        String refreshToken = prefs.getString("ONE_DRIVE_REFRESH_TOKEN_KEY", null); // save it to shared preferences on first login
+        if (refreshToken!=null)
+        {
+            LiveAuthListener liveAuthListener = (LiveAuthListener) this;
+            Object userState = new Object();
+            auth.initialize(scopes, liveAuthListener, userState, refreshToken);
+            /*lib.ShowToast(this,"Signed in.");
+            //client = new LiveConnectClient(session);
+            lib.setClient(client);
+            setResultPositive(session);*/
+        }
+        else
+        {
+            LoginLiveActivity.this.auth.login(LoginLiveActivity.this, scopes, LoginLiveActivity.this);
+        }
 
     }
     @Override
@@ -184,6 +203,8 @@ public class LoginLiveActivity extends Activity  implements LiveAuthListener
             //client = new LiveConnectClient(session);
             lib.setClient(client);
             setResultPositive(session);
+            SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+            prefs.edit().putString("ONE_DRIVE_REFRESH_TOKEN_KEY", session.getRefreshToken()).commit(); // save it to shared preferences on first login
         }
         else {
             lib.ShowToast(LoginLiveActivity.this,"Not signed in. Status is " + status + ".");

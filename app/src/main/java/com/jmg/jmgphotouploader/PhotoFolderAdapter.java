@@ -464,13 +464,13 @@ public class PhotoFolderAdapter extends BaseExpandableListAdapter implements Liv
 	}
 
     List<imgListViewLiveDownloadListener> list = new ArrayList<imgListViewLiveDownloadListener>();
-    Timer timer;
+    Timer timer = null;
     boolean TimerStarted;
     private void LoadThumbnailOneDrive(ImgListItem item, ImageView Image) throws Exception
 	{
         final ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).lv;
 
-		if (!TimerStarted)
+		if (!TimerStarted && timer == null)
         {
             TimerStarted = true;
 			timer = new Timer();
@@ -508,6 +508,7 @@ public class PhotoFolderAdapter extends BaseExpandableListAdapter implements Liv
                         {
                             timer.cancel();
 							timer.purge();
+							timer = null;
                         }
                         catch(Exception ex)
                         {
@@ -566,6 +567,7 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 							TimerStarted = false;
 							timer.cancel();
 							timer.purge();
+							timer = null;
 						}
                         InputStream input = null;
 			        	ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).lv;
@@ -662,6 +664,7 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
                             TimerStarted = false;
                             timer.cancel();
 							timer.purge();
+							timer = null;
                         }
 			        }
 			        public void onDownloadProgress(int totalBytes, int bytesRemaining, LiveDownloadOperation operation)
