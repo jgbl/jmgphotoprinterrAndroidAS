@@ -462,14 +462,15 @@ public class PhotoFolderAdapter extends BaseExpandableListAdapter implements Liv
 			return view;
 		}
 	}
-
+	/*
     List<imgListViewLiveDownloadListener> list = new ArrayList<imgListViewLiveDownloadListener>();
     Timer timer = null;
     boolean TimerStarted;
+    */
     private void LoadThumbnailOneDrive(ImgListItem item, ImageView Image) throws Exception
 	{
         final ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).lv;
-
+		/*
 		if (!TimerStarted && timer == null)
         {
             TimerStarted = true;
@@ -519,7 +520,7 @@ public class PhotoFolderAdapter extends BaseExpandableListAdapter implements Liv
             },500,500);
             //TimerStarted = true;
         }
-
+		*/
         String file = item.id + "/picture?type=thumbnail";
 		if (item.ThumbnailLoaded) return;
 		if (!ItemExists(Image,item)) return;
@@ -561,14 +562,14 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 
 			        public void onDownloadCompleted(LiveDownloadOperation operation)
 			        {
-						list.remove(this);
+						/*list.remove(this);
 						if (list.isEmpty())
 						{
 							TimerStarted = false;
 							timer.cancel();
 							timer.purge();
 							timer = null;
-						}
+						}*/
                         InputStream input = null;
 			        	ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).lv;
                         if (mIsScrolling || lv.getIsScaled() || !ItemExists(Image, item))
@@ -658,6 +659,7 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 							context.finish();
 			        	}
 			        	*/
+						/*
                         list.remove(this);
                         if (list.isEmpty())
                         {
@@ -666,13 +668,14 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 							timer.purge();
 							timer = null;
                         }
+                        */
 			        }
 			        public void onDownloadProgress(int totalBytes, int bytesRemaining, LiveDownloadOperation operation)
 			        {
 			            //resultTextView.setText("Downloading picture... " + bytesRemaining + " bytes downloaded " +
 			              //  "(" + (bytesRemaining / totalBytes) * 100 + "%)");
 			        	int percentCompleted = (int)((bytesRemaining/totalBytes) * 100);
-			        	ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).lv;
+			        	//ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).lv;
 			        	if (mIsScrolling || lv.getIsScaled() || !ItemExists(Image, item))
 			        	{
 			        		lib.ShowToast(context, "Operation canceled! " + item.FileName 
@@ -687,7 +690,7 @@ ZoomExpandableListview lv = (ZoomExpandableListview) ((_MainActivity) context).l
 			        }
 			    };
                 LDL.operation = lib.getClient(context).downloadAsync(file, LDL,new Object[]{Image,item});
-                list.add(LDL);
+                //list.add(LDL);
 
 			}
 		}
